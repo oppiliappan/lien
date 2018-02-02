@@ -2,9 +2,6 @@
 
 import sys
 import subprocess
-from os.path import expanduser
-
-home = expanduser("~")
 
 for i in range(len(sys.argv) - 1):
 	curfile = 'file=@%s' %(sys.argv[i + 1])
@@ -14,5 +11,5 @@ for i in range(len(sys.argv) - 1):
 				f.write(sys.argv[i + 1])
 				f.write(' - ')
 				f.write(str(line))
-			print("Uploaded %s" %(str(line)))
+			print("Uploaded %s" %(str(line)), end='')
 	subprocess.Popen(["notify-send", "Uploaded", (sys.argv[i + 1])])
