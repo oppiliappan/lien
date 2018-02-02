@@ -14,5 +14,5 @@ for i in range(len(sys.argv) - 1):
 				f.write(sys.argv[i + 1])
 				f.write(' - ')
 				f.write(str(line))
+			print("Uploaded %s" %(str(line)))
 	subprocess.Popen(["notify-send", "Uploaded", (sys.argv[i + 1])])
-	print("Uploaded %s" %(sys.argv[i + 1]))
