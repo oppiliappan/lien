@@ -23,26 +23,40 @@ uptek() {
 		echo -ne "$red Error $rst"
 		notify-send "Failed to upload ${1}"
 		exit 1
-	elif [[ "${out}" =~ "curl" ]]
+	else
+		id="${out##*Name\":\"}"
+		id="${id%%\"*}"
+
+		echo -ne "$grn"
+		echo -ne "Uploaded $rst"
+		echo -ne"${1} to "
+		echo "https://u.teknik.io/${id}"
+
+		echo "${1} - https://u.teknik.io/${id}" >> ~/logs.txt
+
+		notify-send "Uploaded" "${1} to teknik.io"
+
+	fi
+}
+
+upoxo() {
+	id=$( curl -sf -F "file=@${1}" https://0x0.st )
+
+	if [[ -z "${id// }" ]]
 	then
 		echo -ne "$red Error $rst"
 		notify-send "Failed to upload ${1}"
 		exit 1
 	else
-		id="${out##*Name\":\"}"
-		id="${id%%\"*}"
+		echo -ne "$grn"
+		echo -ne "Uploaded $rst"
+		echo -ne "${1} to "
+		echo "${id}"
 
-		notify-send "Uploaded" "${1} to teknik.io"
-		echo "${1} - https://u.teknik.io/${id}" >> ~/logs.txt
+		echo "${1} - ${id}" >> ~/logs.txt
 
-		echo -ne "$grn Uploaded $rst"
-		echo -n "${1} to "
-		echo "https://u.teknik.io/${id}"
+		notify-send "Uploaded" "${1} to 0x0.st"
 	fi
-}
-
-upoxo() {
-	
 }
 
 
