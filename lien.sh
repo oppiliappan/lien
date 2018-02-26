@@ -11,7 +11,7 @@ rst="\e[0m"
 
 
 uptek() {
-	iext="${1##*.}"
+	local iext="${1##*.}"
 	if [[ "${iext}" == "png" || "${iext}" == "PNG" ]]; then
 		out=$( curl -sf -F "contentType=image/png" -F "encrypt=${encrypt}"  -F file="@${1}" https://api.teknik.io/v1/Upload )
 	else
@@ -29,10 +29,11 @@ uptek() {
 
 		echo -ne "$grn"
 		echo -ne "Uploaded $rst"
-		echo -ne"${1} to "
+		echo -ne "${1} to "
 		echo "https://u.teknik.io/${id}"
 
-		echo "${1} - https://u.teknik.io/${id}" >> ~/logs.txt
+		local file_path=$( readlink -f $1 )
+		echo "${file_path} - https://u.teknik.io/${id}" >> ~/lien/logs.txt
 
 		notify-send "Uploaded" "${1} to teknik.io"
 
@@ -40,7 +41,7 @@ uptek() {
 }
 
 upoxo() {
-	id=$( curl -sf -F "file=@${1}" https://0x0.st )
+	local id=$( curl -sf -F "file=@${1}" https://0x0.st )
 
 	if [[ -z "${id// }" ]]
 	then
@@ -53,10 +54,15 @@ upoxo() {
 		echo -ne "${1} to "
 		echo "${id}"
 
-		echo "${1} - ${id}" >> ~/logs.txt
+		local file_path=$( readlink -f $1 )
+		echo "${file_path} - ${id}" >> ~/lien/logs.txt
 
 		notify-send "Uploaded" "${1} to 0x0.st"
 	fi
+}
+
+print_logs() {
+	cat ~/logs.txt
 }
 
 
@@ -68,14 +74,32 @@ do
 		-o|--oxo)
 			file="$2"
 			upoxo $file
-			shift # past argument
-			shift # past value
+			shift
+			shift
 			;;
 		-t|--teknik)
 			file="$2"
 			uptek $2
-			shift # past argument
-			shift # past value
+			shift
+			shift
+			;;
+		-s|--scrot)
+			file="$2"
+			scrot -s $2
+			upoxo $file
+			shift
+			shift
+			;;
+		-f|--scrot-full)
+			file="$2"
+			scrot $2
+			upoxo $file
+			shift
+			shift
+			;;
+		-l|--display-logs)
+			print_logs
+			exit 1
 			;;
 	esac
 done
