@@ -34,7 +34,7 @@ uptek() {
 		echo "${file_path} - https://u.teknik.io/${id}" >> ~/lien/lien_logs
 
 		notify-send "Uploaded" "${1} to teknik.io"
-
+		copy https://u.teknik.io/${id}
 	fi
 }
 
@@ -55,7 +55,12 @@ upoxo() {
 		echo "${file_path} - ${id}" >> ~/lien/lien_logs
 
 		notify-send "Uploaded" "${1} to 0x0.st"
+		copy $id
 	fi
+}
+
+copy() {
+	echo $1 | xclip -selection clipboard
 }
 
 print_logs() {
