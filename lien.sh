@@ -26,8 +26,7 @@ uptek() {
 		id="${out##*Name\":\"}"
 		id="${id%%\"*}"
 
-		echo -ne "$grn"
-		echo -ne "Uploaded $rst"
+		echo -ne "${grn}Uploaded ${rst}"
 		echo -ne "${1} to "
 		echo "https://u.teknik.io/${id}"
 
@@ -48,8 +47,7 @@ upoxo() {
 		notify-send "Failed to upload ${1}"
 		exit 1
 	else
-		echo -ne "$grn"
-		echo -ne "Uploaded $rst"
+		echo -ne "${grn}Uploaded ${rst}"
 		echo -ne "${1} to "
 		echo "${id}"
 
@@ -61,7 +59,12 @@ upoxo() {
 }
 
 print_logs() {
-	cat ~/lien_logs.txt
+	if [ ! -f ~/lien/lien_logs ]
+	then
+		echo -e "${red}No logs${rst}"
+	else
+		tac ~/lien/lien_logs
+	fi
 }
 
 
@@ -85,14 +88,14 @@ do
 		-s|--scrot)
 			file="$2"
 			scrot -s $2
-			upoxo $file
+			uptek $file
 			shift
 			shift
 			;;
 		-f|--scrot-full)
 			file="$2"
 			scrot $2
-			upoxo $file
+			uptek $file
 			shift
 			shift
 			;;
