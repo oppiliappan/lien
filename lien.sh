@@ -9,7 +9,6 @@ prp="\e[35m"
 bprp="\e[35;1m"
 rst="\e[0m"
 
-
 uptek() {
 	local iext="${1##*.}"
 	if [[ "${iext}" == "png" || "${iext}" == "PNG" ]]; then
@@ -33,7 +32,7 @@ uptek() {
 		echo "https://u.teknik.io/${id}"
 
 		local file_path=$( readlink -f $1 )
-		echo "${file_path} - https://u.teknik.io/${id}" >> ~/lien/logs.txt
+		echo "${file_path} - https://u.teknik.io/${id}" >> ~/lien/lien_logs
 
 		notify-send "Uploaded" "${1} to teknik.io"
 
@@ -55,14 +54,14 @@ upoxo() {
 		echo "${id}"
 
 		local file_path=$( readlink -f $1 )
-		echo "${file_path} - ${id}" >> ~/lien/logs.txt
+		echo "${file_path} - ${id}" >> ~/lien/lien_logs
 
 		notify-send "Uploaded" "${1} to 0x0.st"
 	fi
 }
 
 print_logs() {
-	cat ~/logs.txt
+	cat ~/lien_logs.txt
 }
 
 
