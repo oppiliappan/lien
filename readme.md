@@ -4,8 +4,8 @@ A simple shell script to upload files / take screenshots and upload them.
 
 ### Dependencies
 
-[xclip](https://github.com/astrand/xclip) - to copy URLs to X11 clipboard
-[curl](https://curl.haxx.se/) - to transfer files to file hosts
+[xclip](https://github.com/astrand/xclip) - to copy URLs to X11 clipboard  
+[curl](https://curl.haxx.se/) - to transfer files to file hosts  
 libnotify / libnotify-bin - to send desktop notifications of upload status
 
 ```
@@ -33,3 +33,8 @@ for i in `ls`; do
 lien -t $i
 done
 ```
+
+### TODO
+
+ - add more hosts
+ - improve logging
