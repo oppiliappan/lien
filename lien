@@ -17,6 +17,9 @@ upload() {
 		0|0x0)
 			upoxo $1
 			;;
+		*)
+			uptek $1
+			;;
 	esac
 }
 
@@ -89,7 +92,7 @@ clear_logs() {
 		echo -e "${red}No logs${rst}"
 	else
 		rm -f $HOME/lien/lien_logs
-		echo -n "Logs cleared."
+		echo "Logs cleared."
 	fi
 }
 
@@ -115,7 +118,7 @@ method=
 hosts=
 named=
 
-while getopts chlusf:n: options
+while getopts chlusf: options
 do
 	case $options in
 		u)
@@ -128,39 +131,53 @@ do
 			hosts=1
 			fhost="$OPTARG"
 			;;
-		n)
-			named=1
-			fname="$OPTARG"
-			;;
 		l)
 			print_logs
+			exit 1
 			;;
 		c)
 			clear_logs
+			exit 1
 			;;
 		h|?)
 			print_help
+			exit 1
 			;;
 	esac
 done
 
-if [ -z "$named" ]
+shift $(( $OPTIND -1 ))
+
+if [ "$#" -gt 1 ]
 then
-	fname=$( date +"%T-%d.%m.%y")
+	echo "Too many arguments."
+	echo "Try lien -h for help."
+elif [ "$#" -lt 0 ]
+then
+	echo "Too few arguments."
+	echo "Try lien -h for help."
+elif [ "$#" -eq 0 ]
+then
+	fname=$( date +"%T-%D" )
 	fname="$fname.png"
+else
+	fname=$1
 fi
 
 case $method in
 	1)
 		scrot -u $fname
 		upload $fname
+		exit 1
 		;;
 	2)
 		scrot -s $fname
 		upload $fname
+		exit 1
 		;;
 	*)
 		scrot $fname
 		upload $fname
+		exit 1
 		;;
 esac
