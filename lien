@@ -10,17 +10,14 @@ bprp="\e[35;1m"
 rst="\e[0m"
 
 upload() {
-	if [ ! -z $hosts ]
-	then
-		case $fhost in 
-			t|teknik)
-				uptek $1
-				;;
-			0|0x0)
-				upoxo $1
-				;;
-		esac
-	fi
+	case $fhost in 
+		t|teknik)
+			uptek $1
+			;;
+		0|0x0)
+			upoxo $1
+			;;
+	esac
 }
 
 uptek() {
@@ -99,7 +96,7 @@ print_help(){
 	echo "           0x0.st (0)"
 	echo "           teknik.io (t)"
 	echo "-s      Take an interactive screenshot."
-	echo "-u      Take a screenshot the focused window."
+	echo "-u      Take a screenshot of the focused window."
 	echo "-a      Take a screenshot of the entire viewport."
 	echo "-l      Print logs of previous uploads. Logs are stored at $HOME/lien/lien_logs."
 	echo "-c      Clear all logs."

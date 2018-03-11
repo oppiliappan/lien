@@ -11,20 +11,29 @@ the upload status, and copy the link to clipboard.
 
 ```
 Usage:
-lien [option] [file]
+lien [options] [file]
 
--h  --help           Display this help message and exit. Does not require a [file].
--o  --oxo            Upload a file to 0x0.st.
--t  --teknik         Upload a file to teknik.io.
--s  --scrot          Take an interactive screenshot and upload it to teknik.io (default).
--f  --scrot-full     Take a screenshot and upload it to teknik.io.
--l  --display-logs   Print logs of previous uploads. Logs are stored at $HOME/lien/lien_logs.
-                     They are printed in reverse chronological order.
+-h      Display this help message and exit. Does not require a [file].
+-f      Upload a file to a file host.
+        The available hosts are:
+           0x0.st (0)
+           teknik.io (t)
+-s      Take an interactive screenshot.
+-u      Take a screenshot of the focused window.
+-a      Take a screenshot of the entire viewport.
+-l      Print logs of previous uploads. Logs are stored at $HOME/lien/lien_logs.
+-c      Clear all logs.
 
 Examples:
-lien -o image.png  # upload an existing file called image.png to 0x0.st
-lien -l  # print logs
-lien -s owo.png  # take an interactive screenshot called owo.png and upload it to teknik.io
+
+# Upload a text file to teknik
+lien -f teknik plain.txt
+
+# Take a selective screenshot
+lien -s shot.png
+
+# Take a screenshot of the focused window, and upload it to 0x0.st
+lien -uf 0x0 focus.png
 ```
 
 Users are encouraged to write basic loops to take care of batch uploads.
