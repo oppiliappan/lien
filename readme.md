@@ -1,12 +1,13 @@
 # lien.sh
 
-A simple shell script to upload files / take screenshots and upload them.
+A simple shell script to upload files / take screenshots and upload them, log the links, inform you about  
+the upload status, and copy the link to clipboard.
 
 ### Dependencies
 
-[xclip](https://github.com/astrand/xclip) - to copy URLs to X11 clipboard  
-[curl](https://curl.haxx.se/) - to transfer files to file hosts  
-libnotify / libnotify-bin - to send desktop notifications of upload status
+[`curl`](https://curl.haxx.se/) - to transfer files to file hosts.  
+`libnotify` / `libnotify-bin` - to send desktop notifications of upload status.  
+[`xclip`](https://github.com/astrand/xclip) - to copy URLs to X11 clipboard.
 
 ```
 Usage:
@@ -36,5 +37,5 @@ done
 
 ### TODO
 
- - add more hosts
- - improve logging
+ - Add more hosts
+ - Improve logging
