@@ -9,6 +9,17 @@ prp="\e[35m"
 bprp="\e[35;1m"
 rst="\e[0m"
 
+upload() {
+	case $fhost in 
+		t|teknik)
+			uptek $1
+			;;
+		0|0x0)
+			upoxo $1
+			;;
+	esac
+}
+
 uptek() {
 	local iext="${1##*.}"
 	if [[ "${iext}" == "png" || "${iext}" == "PNG" ]]; then
@@ -37,7 +48,6 @@ uptek() {
 		copy https://u.teknik.io/${id}
 	fi
 }
-
 
 upoxo() {
 	local id=$( curl -sf -F "file=@${1}" https://0x0.st )
@@ -73,6 +83,16 @@ print_logs() {
 	fi
 }
 
+clear_logs() {
+	if [ ! -f ~/lien/lien_logs ]
+	then
+		echo -e "${red}No logs${rst}"
+	else
+		rm -f $HOME/lien/lien_logs
+		echo -n "Logs cleared."
+	fi
+}
+
 print_help(){
 	echo -e "${grn}Usage:${rst}"
 	echo "lien [option] [file]"
@@ -91,44 +111,56 @@ print_help(){
 	echo "lien -l"
 }
 
-while [[ $# -gt 0 ]]
-do
-	key="$1"
+method=
+hosts=
+named=
 
-	case $key in
-		-o|--oxo)
-			file="$2"
-			upoxo $file
-			shift
-			shift
+while getopts chlusf:n: options
+do
+	case $options in
+		u)
+			method=1
 			;;
-		-t|--teknik)
-			file="$2"
-			uptek $2
-			shift
-			shift
+		s)
+			method=2
 			;;
-		-s|--scrot)
-			file="$2"
-			scrot -s $file
-			uptek $file
-			shift
-			shift
+		f)
+			hosts=1
+			fhost="$OPTARG"
 			;;
-		-f|--scrot-full)
-			file="$2"
-			scrot $file
-			uptek $file
-			shift
-			shift
+		n)
+			named=1
+			fname="$OPTARG"
 			;;
-		-l|--display-logs)
+		l)
 			print_logs
-			exit 1
 			;;
-		-h|--help)
+		c)
+			clear_logs
+			;;
+		h|?)
 			print_help
-			exit 1
 			;;
 	esac
 done
+
+if [ -z "$named" ]
+then
+	fname=$( date +"%T-%d.%m.%y")
+	fname="$fname.png"
+fi
+
+case $method in
+	1)
+		scrot -u $fname
+		upload $fname
+		;;
+	2)
+		scrot -s $fname
+		upload $fname
+		;;
+	*)
+		scrot $fname
+		upload $fname
+		;;
+esac
