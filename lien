@@ -10,17 +10,17 @@ bprp="\e[35;1m"
 rst="\e[0m"
 
 upload() {
-	case $fhost in 
-		t|teknik)
-			uptek $1
-			;;
-		0|0x0)
-			upoxo $1
-			;;
-		*)
-			uptek $1
-			;;
-	esac
+	if [ ! -z $hosts ]
+	then
+		case $fhost in 
+			t|teknik)
+				uptek $1
+				;;
+			0|0x0)
+				upoxo $1
+				;;
+		esac
+	fi
 }
 
 uptek() {
@@ -30,7 +30,6 @@ uptek() {
 	else
 		out=$( curl -sf -F "encrypt=${encrypt}" -F file="@${1}" https://api.teknik.io/v1/Upload )
 	fi
-
 	if [[ "${out}" =~ "error" ]]
 	then
 		echo -ne "$red Error $rst"
@@ -39,14 +38,11 @@ uptek() {
 	else
 		id="${out##*Name\":\"}"
 		id="${id%%\"*}"
-
 		echo -ne "${grn}Uploaded ${rst}"
 		echo -ne "${1} to "
 		echo "https://u.teknik.io/${id}"
-
 		local file_path=$( readlink -f $1 )
 		echo "${file_path} - https://u.teknik.io/${id}" >> ~/lien/lien_logs
-
 		notify-send "Uploaded" "${1} to teknik.io"
 		copy https://u.teknik.io/${id}
 	fi
@@ -54,7 +50,6 @@ uptek() {
 
 upoxo() {
 	local id=$( curl -sf -F "file=@${1}" https://0x0.st )
-
 	if [[ -z "${id// }" ]]
 	then
 		echo -ne "${red}Error $rst"
@@ -64,10 +59,8 @@ upoxo() {
 		echo -ne "${grn}Uploaded ${rst}"
 		echo -ne "${1} to "
 		echo "${id}"
-
 		local file_path=$( readlink -f $1 )
 		echo "${file_path} - ${id}" >> ~/lien/lien_logs
-
 		notify-send "Uploaded" "${1} to 0x0.st"
 		copy $id
 	fi
@@ -98,27 +91,36 @@ clear_logs() {
 
 print_help(){
 	echo -e "${grn}Usage:${rst}"
-	echo "lien [option] [file]"
+	echo "lien [options] [file]"
 	echo
-	echo "-h  --help           Display this help message and exit. Does not require a [file]."
-	echo "-o  --oxo            Upload a file to 0x0.st."
-	echo "-t  --teknik         Upload a file to teknik.io."
-	echo "-s  --scrot          Take an interactive screenshot and upload it to teknik.io."
-	echo "-f  --scrot-full     Take a screenshot and upload it to teknik.io."
-	echo "-l  --display-logs   Print logs of previous uploads. Logs are stored at $HOME/lien/lien_logs."
-	echo "                     They are printed in reverse chronological order."
+	echo "-h      Display this help message and exit. Does not require a [file]."
+	echo "-f      Upload a file to a file host."
+	echo "        The available hosts are:"
+	echo "           0x0.st (0)"
+	echo "           teknik.io (t)"
+	echo "-s      Take an interactive screenshot."
+	echo "-u      Take a screenshot the focused window."
+	echo "-a      Take a screenshot of the entire viewport."
+	echo "-l      Print logs of previous uploads. Logs are stored at $HOME/lien/lien_logs."
+	echo "-c      Clear all logs."
 	echo
 	echo -e "${grn}Examples:${rst}"
-	echo "lien -o ~/Pictures/tests.png"
-	echo "lien -s half.png"
-	echo "lien -l"
+	echo
+	echo "# Upload a text file to teknik"
+	echo "lien -f teknik plain.txt"
+	echo
+	echo "# Take a selective screenshot"
+	echo "lien -s shot.png"
+	echo
+	echo "# Take a screenshot of the focused window, and upload it to 0x0.st"
+	echo "lien -uf 0x0 focus.png"
 }
 
-method=
+method=0
 hosts=
 named=
 
-while getopts chlusf: options
+while getopts :wchlusf: options
 do
 	case $options in
 		u)
@@ -126,6 +128,9 @@ do
 			;;
 		s)
 			method=2
+			;;
+		a)
+			method=3
 			;;
 		f)
 			hosts=1
@@ -143,22 +148,28 @@ do
 			print_help
 			exit 1
 			;;
+		*)
+			print_help
+			exit 1
+			;;
 	esac
 done
 
 shift $(( $OPTIND -1 ))
 
-if [ "$#" -gt 1 ]
+if [ $# -gt 1 ]
 then
 	echo "Too many arguments."
 	echo "Try lien -h for help."
-elif [ "$#" -lt 0 ]
+	exit 1
+elif [ $# -lt 0 ]
 then
 	echo "Too few arguments."
 	echo "Try lien -h for help."
-elif [ "$#" -eq 0 ]
+	exit 1
+elif [ $# -eq 0 ]
 then
-	fname=$( date +"%T-%D" )
+	fname=$( date +"%T-%d.%m.%y" )
 	fname="$fname.png"
 else
 	fname=$1
@@ -175,9 +186,16 @@ case $method in
 		upload $fname
 		exit 1
 		;;
-	*)
+	3)
 		scrot $fname
 		upload $fname
 		exit 1
 		;;
+	*)
+		if [ -z "$hosts" ]
+		then
+			print_help
+		else
+			upload $fname
+		fi
 esac
