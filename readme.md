@@ -1,6 +1,6 @@
 # lien.sh
 
-A simple shell script to upload files / take screenshots and upload them, log the links, inform you about  
+A simple shell script to take screenshots and upload them, log the links, inform you about  
 the upload status, and copy the link to clipboard.
 
 ### Dependencies
@@ -11,21 +11,26 @@ the upload status, and copy the link to clipboard.
 
 ```
 Usage:
-lien [options] [file]
+lien [options]
 
--h      Display this help message and exit. Does not require a [file].
--f      Upload a file to a file host.
-        The available hosts are:
-           0x0.st (0)
-           teknik.io (t)
--s      Take an interactive screenshot.
--u      Take a screenshot of the focused window.
--a      Take a screenshot of the entire viewport.
--l      Print logs of previous uploads. Logs are stored at $HOME/lien/lien_logs.
--c      Clear all logs.
+-h            Display this help message and exit.
+-f <file>     Upload a file to a file host.
+              The available hosts are:
+                 0x0.st (0/0x0)
+                 teknik.io (t/teknik)
+-s <file>     Take an interactive screenshot.
+-u <file>     Take a screenshot of the focused window.
+-a <file>     Take a full screenshot.
+-d <num>      Wait for <num> seconds before taking a screenshot.
+-l            Print logs of previous uploads. Logs are stored at $HOME/lien/lien_logs.
+-c            Clear all logs.
+```
+
+Note: If more than one of the options s/u/a are given, the last option is considered.
 
 Examples:
 
+```shell
 # Upload a text file to teknik
 lien -f teknik plain.txt
 
@@ -33,14 +38,14 @@ lien -f teknik plain.txt
 lien -s shot.png
 
 # Take a screenshot of the focused window, and upload it to 0x0.st
-lien -uf 0x0 focus.png
+lien -uf 0 focus.png
 ```
 
 Users are encouraged to write basic loops to take care of batch uploads.
 
 ```shell
 for i in `ls`; do
-lien -t $i
+lien -f $i
 done
 ```
 
