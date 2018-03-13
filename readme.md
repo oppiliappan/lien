@@ -13,17 +13,17 @@ the upload status, and copy the link to clipboard.
 Usage:
 lien [options]
 
--h            Display this help message and exit.
--f <file>     Upload a file to a file host.
-              The available hosts are:
-                 0x0.st (0/0x0)
-                 teknik.io (t/teknik)
--s <file>     Take an interactive screenshot.
--u <file>     Take a screenshot of the focused window.
--a <file>     Take a full screenshot.
--d <num>      Wait for <num> seconds before taking a screenshot.
--l            Print logs of previous uploads. Logs are stored at $HOME/lien/lien_logs.
--c            Clear all logs.
+-h                  Display this help message and exit.
+-f host <file>      Upload a file to a file host.
+                    The available hosts are:
+                       0x0.st (0/0x0)
+                       teknik.io (t/teknik)
+-s <file>           Take an interactive screenshot.
+-u <file>           Take a screenshot of the focused window.
+-a <file>           Take a full screenshot.
+-d <num>            Wait for <num> seconds before taking a screenshot.
+-l                  Print logs of previous uploads. Logs are stored at $HOME/lien/lien_logs.
+-c                  Clear all logs.
 ```
 
 Note: If more than one of the options s/u/a are given, the last option is considered.
@@ -37,15 +37,15 @@ lien -f teknik plain.txt
 # Take a selective screenshot
 lien -s shot.png
 
-# Take a screenshot of the focused window, and upload it to 0x0.st
-lien -uf 0 focus.png
+# Take a screenshot of the focused window, and upload it to 0x0.st, and clear all logs
+lien -ucf 0 focus.png
 ```
 
 Users are encouraged to write basic loops to take care of batch uploads.
 
 ```shell
 for i in `ls`; do
-lien -f $i
+lien -f teknik $i
 done
 ```
 
