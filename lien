@@ -10,14 +10,19 @@ bprp="\e[35;1m"
 rst="\e[0m"
 
 upload() {
-	case $fhost in 
-		t|teknik)
-			uptek $1
-			;;
-		0|0x0)
-			upoxo $1
-			;;
-	esac
+	if [ ! -z $hosts ]
+	then
+		case $fhost in 
+			t|teknik)
+				uptek $1
+				;;
+			0|0x0)
+				upoxo $1
+				;;
+		esac
+	else
+		echo "You need to specify a file host."
+	fi
 }
 
 uptek() {
@@ -114,10 +119,10 @@ print_help(){
 }
 
 method=0
-hosts=
-named=
+hosts=0
+delay=0
 
-while getopts :wchlusf: options
+while getopts :chlusf:d: options
 do
 	case $options in
 		u)
@@ -132,6 +137,9 @@ do
 		f)
 			hosts=1
 			fhost="$OPTARG"
+			;;
+		d)
+			delay="$OPTARG"
 			;;
 		l)
 			print_logs
@@ -174,25 +182,22 @@ fi
 
 case $method in
 	1)
-		scrot -u $fname
+		scrot -d $delay -u $fname
 		upload $fname
 		exit 1
 		;;
 	2)
-		scrot -s $fname
+		scrot -d $delay -s $fname
 		upload $fname
 		exit 1
 		;;
 	3)
-		scrot $fname
+		scrot -d $delay $fname
 		upload $fname
 		exit 1
 		;;
-	*)
-		if [ -z "$hosts" ]
-		then
-			print_help
-		else
-			upload $fname
-		fi
+	0)
+		upload $fname
+		exit 1
+		;;
 esac
