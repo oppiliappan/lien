@@ -122,7 +122,7 @@ method=0
 hosts=0
 delay=0
 
-while getopts :chlusf:d: options
+while getopts :chlusaf:d: options
 do
 	case $options in
 		u)
