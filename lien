@@ -19,6 +19,9 @@ upload() {
 			0|0x0)
 				upoxo $1
 				;;
+			i|icy)
+				upicy $1
+				;;
 		esac
 	else
 		echo "You need to specify a file host."
@@ -68,6 +71,15 @@ upoxo() {
 	fi
 }
 
+upicy() {
+	if ["$1" != ""]; then		
+		scp $1 file boop:www/upload/
+		echo "https://xix.ph0x.me/$file"
+	else
+		echo "No path specified."
+	fi
+}
+
 copy() {
 	echo $1 | xclip -selection clipboard
 }
@@ -100,6 +112,7 @@ print_help(){
 	echo "        The available hosts are:"
 	echo "           0x0.st (0)"
 	echo "           teknik.io (t)"
+	echo "           xix.ph0x.me (i) [requires an ssh key]"
 	echo "-s      Take an interactive screenshot."
 	echo "-u      Take a screenshot of the focused window."
 	echo "-a      Take a screenshot of the entire viewport."
