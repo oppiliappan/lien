@@ -72,11 +72,20 @@ upoxo() {
 }
 
 upicy() {
-	if ["$1" != ""]; then		
-		scp $1 file boop:www/upload/
-		echo "https://xix.ph0x.me/$file"
+	local id=$( scp ${1} boop:www/upload/ )
+	if [[ -z "${id// }" ]]
+	then
+		echo -ne "${red} Error $rst"
+		notify-send "Failed to upload ${1}"
+		exit 1
 	else
-		echo "No path specified."
+		echo -ne "${grn} Uploaded ${rst}"
+		echo -ne "${1} to "
+		echo "${id}"
+		local file_path=$( readlink -f $1 )
+		echo "${file_path} - ${id}" >> ~/lien/lien_logs
+		notify-send "Uploaded" "${1} to xix.ph0x.me"
+		copy $id
 	fi
 }
 
