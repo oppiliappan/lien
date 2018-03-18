@@ -9,8 +9,16 @@ prp="\e[35m"
 bprp="\e[35;1m"
 rst="\e[0m"
 
+####### Configuration ########
+
 # path to save screenshots and logs
 save_dir="$HOME/scrots"
+
+# application to open when lien is called
+# with the -e tag
+editor_app="gimp"
+
+##############################
 
 upload() {
 	if [ ! -z $hosts ]
@@ -140,8 +148,9 @@ print_help(){
 method=0
 hosts=0
 delay=0
+edit=0
 
-while getopts :chlusaf:d: options
+while getopts :chlusaef:d: options
 do
 	case $options in
 		u)
@@ -203,16 +212,19 @@ case $method in
 	1)
 		scrot -d $delay -u $fname
 		upload $fname
+		mv "$fname" "$save_dir/$fname"
 		exit 1
 		;;
 	2)
 		scrot -d $delay -s $fname
 		upload $fname
+		mv "$fname" "$save_dir/$fname"
 		exit 1
 		;;
 	3)
 		scrot -d $delay $fname
 		upload $fname
+		mv "$fname" "$save_dir/$fname"
 		exit 1
 		;;
 	0)
