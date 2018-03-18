@@ -1,7 +1,6 @@
 # lien.sh
 
-A simple shell script to take screenshots and upload them, log the links, inform you about  
-the upload status, and copy the link to clipboard.
+A simple shell script to take screenshots and upload them, log the links, inform you about the upload status, and copy the link to clipboard.
 
 ### Dependencies
 
@@ -18,7 +17,7 @@ lien [options]
                     The available hosts are:
                        0x0.st (0/0x0)
                        teknik.io (t/teknik)
-					   xix.ph0x.me (i/icy) [requires an ssh key]
+                       xix.ph0x.me (i/icy) [requires an ssh key]
 -s <file>           Take an interactive screenshot.
 -u <file>           Take a screenshot of the focused window.
 -a <file>           Take a full screenshot.
@@ -29,7 +28,11 @@ lien [options]
 
 Note: If more than one of the options s/u/a are given, the last option is considered.
 
-Examples:
+### Configuration
+
+This portion of the readme is under construction.
+
+### Examples
 
 ```shell
 # Upload a text file to teknik
