@@ -9,6 +9,9 @@ prp="\e[35m"
 bprp="\e[35;1m"
 rst="\e[0m"
 
+# path to save screenshots and logs
+save_dir="$HOME/scrots"
+
 upload() {
 	if [ ! -z $hosts ]
 	then
@@ -43,11 +46,9 @@ uptek() {
 	else
 		id="${out##*Name\":\"}"
 		id="${id%%\"*}"
-		echo -ne "${grn}Uploaded ${rst}"
-		echo -ne "${1} to "
 		echo "https://u.teknik.io/${id}"
 		local file_path=$( readlink -f $1 )
-		echo "${file_path} - https://u.teknik.io/${id}" >> ~/lien/lien_logs
+		echo "${file_path} - https://u.teknik.io/${id}" >> $save_dir/lien_logs
 		notify-send "Uploaded" "${1} to teknik.io"
 		copy https://u.teknik.io/${id}
 	fi
@@ -61,11 +62,9 @@ upoxo() {
 		notify-send "Failed to upload ${1}"
 		exit 1
 	else
-		echo -ne "${grn}Uploaded ${rst}"
-		echo -ne "${1} to "
 		echo "${id}"
 		local file_path=$( readlink -f $1 )
-		echo "${file_path} - ${id}" >> ~/lien/lien_logs
+		echo "${file_path} - ${id}" >> $save_dir/lien_logs
 		notify-send "Uploaded" "${1} to 0x0.st"
 		copy $id
 	fi
@@ -79,11 +78,9 @@ upicy() {
 		notify-send "Failed to upload ${1}"
 		exit 1
 	else
-		echo -ne "${grn} Uploaded ${rst}"
-		echo -ne "${1} to "
 		echo "${id}"
 		local file_path=$( readlink -f $1 )
-		echo "${file_path} - ${id}" >> ~/lien/lien_logs
+		echo "${file_path} - ${id}" >> $save_dir/lien_logs
 		notify-send "Uploaded" "${1} to xix.ph0x.me"
 		copy $id
 	fi
@@ -94,20 +91,20 @@ copy() {
 }
 
 print_logs() {
-	if [ ! -f ~/lien/lien_logs ]
+	if [ ! -f $save_dir/lien_logs ]
 	then
 		echo -e "${red}No logs${rst}"
 	else
-		tac ~/lien/lien_logs
+		tac $save_dir/lien_logs
 	fi
 }
 
 clear_logs() {
-	if [ ! -f ~/lien/lien_logs ]
+	if [ ! -f $save_dir/lien_logs ]
 	then
 		echo -e "${red}No logs${rst}"
 	else
-		rm -f $HOME/lien/lien_logs
+		rm -f $save_dir/lien_logs
 		echo "Logs cleared."
 	fi
 }
@@ -125,7 +122,7 @@ print_help(){
 	echo "-s      Take an interactive screenshot."
 	echo "-u      Take a screenshot of the focused window."
 	echo "-a      Take a screenshot of the entire viewport."
-	echo "-l      Print logs of previous uploads. Logs are stored at $HOME/lien/lien_logs."
+	echo "-l      Print logs of previous uploads. Logs are stored at $save_dir."
 	echo "-c      Clear all logs."
 	echo
 	echo -e "${grn}Examples:${rst}"
