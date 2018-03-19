@@ -33,6 +33,9 @@ upload() {
 			i|icy)
 				upicy $1
 				;;
+			n|transfer)
+				uptransfer $1
+				;;
 		esac
 	else
 		echo "You need to specify a file host."
@@ -48,17 +51,33 @@ uptek() {
 	fi
 	if [[ "${out}" =~ "error" ]]
 	then
-		echo -ne "$red Error $rst"
+		echo -e "$red Error $rst"
 		notify-send "Failed to upload ${1}"
 		exit 1
 	else
 		id="${out##*Name\":\"}"
 		id="${id%%\"*}"
 		echo "https://u.teknik.io/${id}"
-		local file_path=$( readlink -f $1 )
+		local file_path=$( readlink -f $save_dir/$1 )
 		echo "${file_path} - https://u.teknik.io/${id}" >> $save_dir/lien_logs
 		notify-send "Uploaded" "${1} to teknik.io"
 		copy https://u.teknik.io/${id}
+	fi
+}
+
+uptransfer() {
+	local id=$( curl -s --upload-file $1 https://transfer.sh/$1  )
+	if [[ -z "${id// }" ]]
+	then
+		echo -e "${red}Error $rst"
+		notify-send "Failed to upload ${1}"
+		exit 1
+	else
+		echo "${id}"
+		local file_path=$( readlink -f $save_dir/$1 )
+		echo "${file_path} - ${id}" >> $save_dir/lien_logs
+		notify-send "Uploaded" "${1} to 0x0.st"
+		copy $id
 	fi
 }
 
@@ -66,12 +85,12 @@ upoxo() {
 	local id=$( curl -sf -F "file=@${1}" https://0x0.st )
 	if [[ -z "${id// }" ]]
 	then
-		echo -ne "${red}Error $rst"
+		echo -e "${red}Error $rst"
 		notify-send "Failed to upload ${1}"
 		exit 1
 	else
 		echo "${id}"
-		local file_path=$( readlink -f $1 )
+		local file_path=$( readlink -f $save_dir/$1 )
 		echo "${file_path} - ${id}" >> $save_dir/lien_logs
 		notify-send "Uploaded" "${1} to 0x0.st"
 		copy $id
@@ -82,7 +101,7 @@ upicy() {
 	local id=$( scp ${1} boop:www/upload/ )
 	if [[ -z "${id// }" ]]
 	then
-		echo -ne "${red} Error $rst"
+		echo -e "${red} Error $rst"
 		notify-send "Failed to upload ${1}"
 		exit 1
 	else
