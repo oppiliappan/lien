@@ -18,6 +18,7 @@ lien [options]
                        0x0.st (0/0x0)
                        teknik.io (t/teknik)
                        xix.ph0x.me (i/icy) [requires an ssh key]
+                       transfer.sh (n/transfer)
 -s <file>           Take an interactive screenshot.
 -u <file>           Take a screenshot of the focused window.
 -a <file>           Take a full screenshot.
