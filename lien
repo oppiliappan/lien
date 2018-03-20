@@ -191,19 +191,15 @@ do
 			;;
 		l)
 			print_logs
-			exit 1
 			;;
 		c)
 			clear_logs
-			exit 1
 			;;
 		h|?)
 			print_help
-			exit 1
 			;;
 		*)
 			print_help
-			exit 1
 			;;
 	esac
 done
@@ -232,19 +228,19 @@ case $method in
 	1)
 		scrot -d $delay -u $fname
 		upload $fname
-		mv "$fname" "$save_dir/$fname"
+		mv -f "$fname" "$save_dir/$fname"
 		exit 1
 		;;
 	2)
 		scrot -d $delay -s $fname
 		upload $fname
-		mv "$fname" "$save_dir/$fname"
+		mv -f "$fname" "$save_dir/$fname"
 		exit 1
 		;;
 	3)
 		scrot -d $delay $fname
 		upload $fname
-		mv "$fname" "$save_dir/$fname"
+		mv -f "$fname" "$save_dir/$fname"
 		exit 1
 		;;
 	0)
@@ -252,3 +248,5 @@ case $method in
 		exit 1
 		;;
 esac
+
+exit 1
