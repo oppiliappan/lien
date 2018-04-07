@@ -1,5 +1,13 @@
 #!/bin/bash
 
+
+# Lien
+# Dead simple file upload program
+# - Upload to different file hosts
+# - Shorten links
+# - Log your uploads
+# - Clear you logs
+
 red="\e[31m"
 grn="\e[32m"
 ylw="\e[33m"
@@ -137,6 +145,13 @@ clear_logs() {
 	fi
 }
 
+shorten() {
+	local id=$( curl -sF"shorten=${1}" https://0x0.st )
+	echo ${id}
+	echo "${1} - ${id}" >> $save_dir/lien_logs
+	copy $id
+}
+
 print_help(){
 	echo -e "${grn}Usage:${rst}"
 	echo "lien [options] [file]"
@@ -171,7 +186,7 @@ hosts=0
 delay=0
 edit=0
 
-while getopts :chlusaef:d: options
+while getopts :hlusaf:d:o: options
 do
 	case $options in
 		u)
@@ -192,9 +207,15 @@ do
 			;;
 		l)
 			print_logs
+			exit 1
+			;;
+		o)
+			shorten "${OPTARG}"
+			exit 1
 			;;
 		c)
-			clear_logs
+			clear
+			exit 1
 			;;
 		h|?)
 			print_help
