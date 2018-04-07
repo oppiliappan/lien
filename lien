@@ -62,7 +62,7 @@ upload() {
 		echo "${id}"
 		local file_path=$( readlink -f $save_dir/$1 )
 		echo "${file_path} - ${id}" >> $save_dir/lien_logs
-		notify-send "Uploaded" "${1}"
+		notify-send "Uploaded successfully"
 		copy $id
 	fi
 }
@@ -93,7 +93,7 @@ print_logs() {
 	fi
 }
 
-while getopts :hlusafd:o options
+while getopts :hlusafd:o: options
 do
 	case $options in
 		u)
@@ -107,7 +107,6 @@ do
 			;;
 		f)
 			doUpload=1
-			fhost="$OPTARG"
 			;;
 		d)
 			delay="$OPTARG"
@@ -162,7 +161,7 @@ main() {
 		1)
 			case $method in
 				0)
-					upload $1
+					upload $fname
 					;;
 				*)
 					screenshot $method $delay
