@@ -28,69 +28,30 @@ editor_app="gimp"
 
 ##############################
 
+method=0
+hosts=0
+delay=0
+edit=0
+
+copy() {
+	echo $1 | xclip -i -selection clipboard
+}
+
+screenshot() {
+	case $1 in
+		1)
+			scrot -u -d $2 $fname
+			;;
+		2)
+			scrot -s -d $2 $fname
+			;;
+		3)
+			scrot -d $2 $fname
+			;;
+	esac
+}
+
 upload() {
-	if [ ! -z $hosts ]
-	then
-		case $fhost in 
-			t|teknik)
-				uptek $1
-				;;
-			0|0x0)
-				upoxo $1
-				;;
-			i|icy)
-				upicy $1
-				;;
-			n|transfer)
-				uptransfer $1
-				;;
-		esac
-		rm $1
-	else
-		echo "You need to specify a file host."
-	fi
-}
-
-uptek() {
-	local iext="${1##*.}"
-	if [[ "${iext}" == "png" || "${iext}" == "PNG" ]]; then
-		out=$( curl -sf -F "contentType=image/png" -F "encrypt=${encrypt}"  -F file="@${1}" https://api.teknik.io/v1/Upload )
-	else
-		out=$( curl -sf -F "encrypt=${encrypt}" -F file="@${1}" https://api.teknik.io/v1/Upload )
-	fi
-	if [[ "${out}" =~ "error" ]]
-	then
-		echo -e "$red Error $rst"
-		notify-send "Failed to upload ${1}"
-		exit 1
-	else
-		id="${out##*Name\":\"}"
-		id="${id%%\"*}"
-		echo "https://u.teknik.io/${id}"
-		local file_path=$( readlink -f $save_dir/$1 )
-		echo "${file_path} - https://u.teknik.io/${id}" >> $save_dir/lien_logs
-		notify-send "Uploaded" "${1} to teknik.io"
-		copy https://u.teknik.io/${id}
-	fi
-}
-
-uptransfer() {
-	local id=$( curl -s --upload-file $1 https://transfer.sh/$1  )
-	if [[ -z "${id// }" ]]
-	then
-		echo -e "${red}Error $rst"
-		notify-send "Failed to upload ${1}"
-		exit 1
-	else
-		echo "${id}"
-		local file_path=$( readlink -f $save_dir/$1 )
-		echo "${file_path} - ${id}" >> $save_dir/lien_logs
-		notify-send "Uploaded" "${1} to 0x0.st"
-		copy $id
-	fi
-}
-
-upoxo() {
 	local id=$( curl -sf -F "file=@${1}" https://0x0.st )
 	if [[ -z "${id// }" ]]
 	then
@@ -101,38 +62,16 @@ upoxo() {
 		echo "${id}"
 		local file_path=$( readlink -f $save_dir/$1 )
 		echo "${file_path} - ${id}" >> $save_dir/lien_logs
-		notify-send "Uploaded" "${1} to 0x0.st"
+		notify-send "Uploaded" "${1}"
 		copy $id
 	fi
 }
 
-upicy() {
-	local id=$( scp ${1} boop:www/upload/ )
-	if [[ -z "${id// }" ]]
-	then
-		echo -e "${red} Error $rst"
-		notify-send "Failed to upload ${1}"
-		exit 1
-	else
-		echo "${id}"
-		local file_path=$( readlink -f $1 )
-		echo "${file_path} - ${id}" >> $save_dir/lien_logs
-		notify-send "Uploaded" "${1} to xix.ph0x.me"
-		copy $id
-	fi
-}
-
-copy() {
-	echo $1 | xclip -i -selection clipboard
-}
-
-print_logs() {
-	if [ ! -f $save_dir/lien_logs ]
-	then
-		echo -e "${red}No logs${rst}"
-	else
-		tac $save_dir/lien_logs
-	fi
+shorten() {
+	local id=$( curl -sF"shorten=${1}" https://0x0.st )
+	echo ${id}
+	echo "${1} - ${id}" >> $save_dir/lien_logs
+	copy $id
 }
 
 clear_logs() {
@@ -145,48 +84,16 @@ clear_logs() {
 	fi
 }
 
-shorten() {
-	local id=$( curl -sF"shorten=${1}" https://0x0.st )
-	echo ${id}
-	echo "${1} - ${id}" >> $save_dir/lien_logs
-	copy $id
+print_logs() {
+	if [ ! -f $save_dir/lien_logs ]
+	then
+		echo -e "${red}No logs${rst}"
+	else
+		tac $save_dir/lien_logs
+	fi
 }
 
-print_help(){
-	echo -e "${grn}Usage:${rst}"
-	echo "lien [options] [file]"
-	echo
-	echo "-h      Display this help message and exit. Does not require a [file]."
-	echo "-f      Upload a file to a file host."
-	echo "        The available hosts are:"
-	echo "           0x0.st (0/0x0)"
-	echo "           teknik.io (t/teknik)"
-	echo "           xix.ph0x.me (i/icy) [requires an ssh key]"
-	echo "           transfer.sh (n)"
-	echo "-s      Take an interactive screenshot."
-	echo "-u      Take a screenshot of the focused window."
-	echo "-a      Take a screenshot of the entire viewport."
-	echo "-l      Print logs of previous uploads. Logs are stored at $save_dir."
-	echo "-c      Clear all logs."
-	echo
-	echo -e "${grn}Examples:${rst}"
-	echo
-	echo "# Upload a text file to teknik"
-	echo "lien -f teknik plain.txt"
-	echo
-	echo "# Take a selective screenshot"
-	echo "lien -s shot.png"
-	echo
-	echo "# Take a screenshot of the focused window, and upload it to 0x0.st"
-	echo "lien -uf 0x0 focus.png"
-}
-
-method=0
-hosts=0
-delay=0
-edit=0
-
-while getopts :hlusaf:d:o: options
+while getopts :hlusafd:o options
 do
 	case $options in
 		u)
@@ -199,7 +106,7 @@ do
 			method=3
 			;;
 		f)
-			hosts=1
+			doUpload=1
 			fhost="$OPTARG"
 			;;
 		d)
@@ -207,37 +114,40 @@ do
 			;;
 		l)
 			print_logs
-			exit 1
+			exit 0
 			;;
 		o)
 			shorten "${OPTARG}"
-			exit 1
+			exit 0
 			;;
 		c)
-			clear
-			exit 1
+			clear_logs
+			exit 0
 			;;
 		h|?)
 			print_help
+			exit 0
 			;;
 		*)
 			print_help
+			exit 0
 			;;
 	esac
 done
 
 shift $(( $OPTIND -1 ))
 
+# Process the remaining args
 if [ $# -gt 1 ]
 then
 	echo "Too many arguments."
 	echo "Try lien -h for help."
-	exit 1
+	exit 0
 elif [ $# -lt 0 ]
 then
 	echo "Too few arguments."
 	echo "Try lien -h for help."
-	exit 1
+	exit 0
 elif [ $# -eq 0 ]
 then
 	fname=$( date +"%T-%d.%m.%y" )
@@ -246,26 +156,37 @@ else
 	fname=$1
 fi
 
-case $method in
-	1)
-		scrot -d $delay -u $fname
-		upload $fname
-		exit 1
-		;;
-	2)
-		scrot -d $delay -s $fname
-		upload $fname
-		exit 1
-		;;
-	3)
-		scrot -d $delay $fname
-		upload $fname
-		exit 1
-		;;
-	0)
-		upload $fname
-		exit 1
-		;;
-esac
 
+main() {
+	case $doUpload in
+		1)
+			case $method in
+				0)
+					upload $1
+					;;
+				*)
+					screenshot $method $delay
+					upload $fname
+					rm $fname
+					;;
+			esac
+			;;
+		0)
+			case $method in
+				0)
+					exit 0
+					;;
+				*)
+					screenshot $method $delay
+					mv $fname $save_dir/$fname
+					;;
+			esac
+			;;
+	esac
+}
+
+main
+
+# exit if none of the others
+# options end the program
 exit 1
