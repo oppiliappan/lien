@@ -115,7 +115,7 @@ upicy() {
 }
 
 copy() {
-	echo $1 | xclip -i
+	echo $1 | xclip -i -selection clipboard
 }
 
 print_logs() {
