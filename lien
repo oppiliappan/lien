@@ -32,9 +32,14 @@ method=0
 hosts=0
 delay=0
 edit=0
+doUpload=0
 
+print_help() {
+	echo "Hey its me ur help"
+}
 copy() {
-	echo $1 | xclip -i -selection clipboard
+	echo $1 | xclip -i
+	echo $1 | xclip -selection clipboard
 }
 
 screenshot() {
@@ -172,10 +177,7 @@ main() {
 			;;
 		0)
 			case $method in
-				0)
-					exit 0
-					;;
-				*)
+				1|2|3)
 					screenshot $method $delay
 					mv $fname $save_dir/$fname
 					;;
