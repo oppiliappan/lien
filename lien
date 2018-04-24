@@ -45,12 +45,12 @@ copy() {
 screenshot() {
 	case $1 in 
 		1)
-			read -r X Y W H < <(slop -f "%x %y %w %h" -b 4 -c 0.8,0.8,0.8,0.8 -t 0 )
+			read -r X Y W H < <(slop -f "%x %y %w %h" -b 4 -c 0.8,0.8,0.8,0.8 -t 0 --opengl --magnify)
 			g=${W}x${H}+${X}+${Y}
-			maim -g "$g" -d "$2"
+			maim -g "$g" -d "$2" $fname
 			;;
 		2)
-			maim -d "$2"
+			maim -d "$2" $fname
 			;;
 	esac
 }
@@ -64,8 +64,7 @@ upload() {
 		exit 1
 	else
 		echo "${id}"
-		local file_path=$( readlink -f $save_dir/$1 )
-		echo "${file_path} - ${id}" >> $save_dir/lien_logs
+		echo "${fname} - ${id}" >> $save_dir/lien_logs
 		notify-send "↑ Uploaded successfully"
 		copy $id
 	fi
@@ -97,7 +96,7 @@ print_logs() {
 	fi
 }
 
-while getopts :hlsafd:o: options
+while getopts :hlsafcd:o: options
 do
 	case $options in
 		s) method=1 ;;
