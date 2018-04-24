@@ -6,7 +6,7 @@
 # - Upload to different file hosts
 # - Shorten links
 # - Log your uploads
-# - Clear you logs
+# - Clear your logs
 
 red="\e[31m"
 grn="\e[32m"
@@ -43,15 +43,14 @@ copy() {
 }
 
 screenshot() {
-	case $1 in
+	case $1 in 
 		1)
-			scrot -u -d $2 $fname
+			read -r X Y W H < <(slop -f "%x %y %w %h" -b 4 -c 0.8,0.8,0.8,0.8 -t 0 )
+			g=${W}x${H}+${X}+${Y}
+			maim -g "$g" -d "$2"
 			;;
 		2)
-			scrot -s -d $2 $fname
-			;;
-		3)
-			scrot -d $2 $fname
+			maim -d "$2"
 			;;
 	esac
 }
@@ -67,7 +66,7 @@ upload() {
 		echo "${id}"
 		local file_path=$( readlink -f $save_dir/$1 )
 		echo "${file_path} - ${id}" >> $save_dir/lien_logs
-		notify-send "Uploaded successfully"
+		notify-send "↑ Uploaded successfully"
 		copy $id
 	fi
 }
@@ -98,24 +97,13 @@ print_logs() {
 	fi
 }
 
-while getopts :hlusafd:o: options
+while getopts :hlsafd:o: options
 do
 	case $options in
-		u)
-			method=1
-			;;
-		s)
-			method=2
-			;;
-		a)
-			method=3
-			;;
-		f)
-			doUpload=1
-			;;
-		d)
-			delay="$OPTARG"
-			;;
+		s) method=1 ;;
+		a) method=2 ;;
+		f) doUpload=1 ;;
+		d) delay="$OPTARG" ;;
 		l)
 			print_logs
 			exit 0
