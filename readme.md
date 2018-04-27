@@ -34,7 +34,7 @@ Users are encouraged to write basic loops to take care of batch uploads.
 
 ```shell
 for i in `ls`; do
-lien -f teknik $i
+lien -f "$i"
 done
 ```
 
