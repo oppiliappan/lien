@@ -3,10 +3,11 @@
 
 # Lien
 # Dead simple file upload program
-# - Upload to different file hosts
+# - Upload to a file host
 # - Shorten links
 # - Log your uploads
 # - Clear your logs
+# - Repeat
 
 red="\e[31m"
 grn="\e[32m"
@@ -35,8 +36,25 @@ edit=0
 doUpload=0
 
 print_help() {
-	echo "Hey its me ur help"
+	echo "Usage:"
+	echo "lien [options]"
+
+	echo "-h                  Display this help message and exit."
+	echo "-f [file]           Upload a file to a file host."
+	echo "Auto uploads a screenshot when paired with the 's' flag"
+	echo "-s [file]           Take an interactive screenshot."
+	echo "-a [file]           Take a full screenshot."
+	echo "-d <num>            Wait for <num> seconds before taking a screenshot."
+	echo "-l                  Print logs of previous uploads. Logs are stored at $HOME/lien/lien_logs."
+	echo "-c                  Clear all logs."
+
+	echo "Examples:"
+
+	echo "lien -f xyz.txt # upload a text file"
+	echo "lien -af -d 2   # upload a screenshot of the entire root window"
+	echo "                # after a delay of 2 seconds"
 }
+
 copy() {
 	echo $1 | xclip -i
 	echo $1 | xclip -selection clipboard
@@ -77,6 +95,15 @@ shorten() {
 	copy $id
 }
 
+print_logs() {
+	if [ ! -f $save_dir/lien_logs ]
+	then
+		echo -e "${red}No logs${rst}"
+	else
+		tac $save_dir/lien_logs
+	fi
+}
+
 clear_logs() {
 	if [ ! -f $save_dir/lien_logs ]
 	then
@@ -84,15 +111,6 @@ clear_logs() {
 	else
 		rm -f $save_dir/lien_logs
 		echo "Logs cleared."
-	fi
-}
-
-print_logs() {
-	if [ ! -f $save_dir/lien_logs ]
-	then
-		echo -e "${red}No logs${rst}"
-	else
-		tac $save_dir/lien_logs
 	fi
 }
 
