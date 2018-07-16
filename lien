@@ -63,13 +63,17 @@ copy() {
 screenshot() {
 	case $1 in 
 		1)
-			read -r X Y W H < <(slop -f "%x %y %w %h" -b 4 -c 0.8,0.8,0.8,0.8 -t 0 --opengl --magnify)
+			read -r X Y W H < <(slop -f "%x %y %w %h" -b 4 -c 0.8,0.8,0.8,0.8 -t 0 )
 			g=${W}x${H}+${X}+${Y}
-			maim -g "$g" -d "$2" $fname
+			maim -g "$g" -d "$2" "$fname"
 			;;
 		2)
-			maim -d "$2" $fname
+			maim -d "$2" "$fname"
 			;;
+        3)
+            maim -d "$2" -i $(xdotool getactivewindow) input.jpg
+            convert input.jpg \( +clone -background black -shadow 60x60+0+0 \) +swap -background white -layers merge +repage "$fname"
+            rm input.jpg
 	esac
 }
 
@@ -83,7 +87,7 @@ upload() {
 	else
 		echo "${id}"
 		echo "${fname} - ${id}" >> $save_dir/lien_logs
-		notify-send "↑ Uploaded successfully"
+		notify-send "Uploaded successfully"
 		copy $id
 	fi
 }
@@ -114,11 +118,12 @@ clear_logs() {
 	fi
 }
 
-while getopts :hlsafcd:o: options
+while getopts :hlsaufcd:o: options
 do
 	case $options in
 		s) method=1 ;;
 		a) method=2 ;;
+		u) method=3 ;;
 		f) doUpload=1 ;;
 		d) delay="$OPTARG" ;;
 		l)
