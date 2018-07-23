@@ -65,15 +65,17 @@ screenshot() {
 		1)
 			read -r X Y W H < <(slop -f "%x %y %w %h" -b 4 -c 0.8,0.8,0.8,0.8 -t 0 )
 			g=${W}x${H}+${X}+${Y}
-			maim -g "$g" -d "$2" "$fname"
+            sleep "$2"
+			maim -g "$g" "$fname"
 			;;
 		2)
 			maim -d "$2" "$fname"
 			;;
         3)
-            maim -d "$2" -i $(xdotool getactivewindow) input.jpg
-            convert input.jpg \( +clone -background black -shadow 60x60+0+0 \) +swap -background white -layers merge +repage "$fname"
-            rm input.jpg
+            sleep "$2"
+            maim -i $(xdotool getactivewindow) input.png
+            convert input.png \( +clone -background black -shadow 60x60+0+0 \) +swap -background white -layers merge +repage "$fname"
+            rm input.png
 	esac
 }
 
