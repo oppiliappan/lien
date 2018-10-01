@@ -27,6 +27,9 @@ save_dir="$HOME/pics/scrots"
 # with the -e tag
 editor_app="gimp"
 
+# host to upload to
+host="https://0x0.st"
+
 ##############################
 
 method=0
@@ -80,7 +83,7 @@ screenshot() {
 }
 
 upload() {
-	local id=$( curl -sf -F "file=@${1}" https://0x0.st )
+	local id=$( curl -sf -F "file=@${1}" $host)
 	if [[ -z "${id// }" ]]
 	then
 		echo -e "${red}Error $rst"
@@ -95,7 +98,7 @@ upload() {
 }
 
 shorten() {
-	local id=$( curl -sF"shorten=${1}" https://0x0.st )
+	local id=$( curl -sF"shorten=${1}" $host)
 	echo ${id}
 	echo "${1} - ${id}" >> $save_dir/lien_logs
 	copy $id
